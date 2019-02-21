@@ -6,7 +6,7 @@
                     &copy;2018 — <strong>Vuetify</strong>
                 </v-flex>
             </v-layout>
-            <!-- teste -->
+         
         </v-footer>
     </div>
 </template>
