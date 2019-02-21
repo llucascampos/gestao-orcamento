@@ -1,0 +1,10 @@
+Criando API com nodeJs e mySQL
+
+1- npm init -> para criar projeto em node
+2- npm instal -s mysql -> para adicinar pacote do mysql posibilitando usar mysql com nodejs
+3- >npm install -s mysql  npm install -S express body-parser -> para adicionar express e body-parser
+
+-----------------------------------------------
+
+1- npm install -g sequelize-cli express-generator -> 
+2- express nomePrjeto
