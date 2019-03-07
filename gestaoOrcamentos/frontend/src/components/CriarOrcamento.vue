@@ -36,9 +36,11 @@
                         <v-container grid-list-md>
                             <v-layout>
                                 <v-autocomplete
-                                :items="nomeMaterial"
+                                :items="materiais"
+                                item-text="nome"
                                 label="Materiais"
-                                v-model="novoMaterial.nome"
+                                v-model="novoMaterial"
+                                return-object
                                 ></v-autocomplete>
                             </v-layout>
                             <v-layout>
@@ -61,22 +63,22 @@
 
                 <v-data-table
                     :headers="headers"
-                    :items="materiaisOrcamento"
+                    :items="novoOrcamento.listaMateriais"
                     class="elevation-1"
                     hide-actions
                 >
                     <template slot="items" slot-scope="props">
                     <td class="text-xs-left">{{ props.item.nome}}</td>
                     <td class="text-xs-left">{{ props.item.quantidade}}</td>
-                    <td class="text-xs-left">{{ props.item.valor}}</td>
-                    <td>
+                    <td class="text-xs-left">{{ "R$ "+props.item.preco}}</td>
+                    <td class="text-xs-right">
                         <v-icon @click="editItem(props.item)"  class="mr-2">edit </v-icon>
                         <v-icon @click="deleteItem(props.item)" class="ml-2"> delete </v-icon>
                     </td>
                     </template>
                 </v-data-table> 
                 <v-btn  @click="salvarOrcamento()">Salvar</v-btn>
-                {{novoOrcamento}}
+                {{novoOrcamento}} <br><br> {{novoMaterial}}
         </v-card>
              
     </v-app>
@@ -94,22 +96,16 @@ export default {
                 { text: 'Nome',         value: 'nome',        sortable: false },
                 { text: 'Quantidades',  value: 'quantidade',  sortable: false },
                 { text: 'Valor',        value: 'valor',       sortable: false },
-                { text: 'Ações',        value: 'açoes',       sortable: false },
+                { text: 'Ações',        value: 'açoes',   align: 'right',    sortable: false },
             ],
 
             novoOrcamento: {
                 nome: '',
                 servico: '',
+                listaMateriais: []
             },
-
-            novoMaterial: {
-                nome: '',
-                quantidade: null,
-                valor: 0
-            },
+            novoMaterial:{},
             orcamentos:[],
-            nomeMaterial: [],
-            materiaisOrcamento: [],
             editedIndex: -1,
             
       
@@ -141,30 +137,32 @@ export default {
 
     created () {
       this.initialize()
-      this.pegandoApenasNomeMaterial()
+    
     },
 
     methods: {
         initialize () {
         
         },
-        pegandoApenasNomeMaterial(){
-            let nomeMateriais = []
-            this.materiais.forEach(function(material){
-                nomeMateriais.push(material.nome)
-            })
-            this.nomeMaterial = nomeMateriais
+
+        somandoValorMaterial(valor){
+            console.log(valor)
+            console.log(this.novoOrcamento.listaMateriais.quantidade)
+            let total = parseFloat(valor * this.novoOrcamento.listaMateriais.quantidade)
+            console.log(total)
+            return total
+
         },
 
         editItem (item) {
-        this.editedIndex = this.materiaisOrcamento.indexOf(item)
+        this.editedIndex = this.novoOrcamento.listaMateriais.indexOf(item)
         this.novoMaterial = Object.assign({}, item)
         this.dialog = true
       },
 
       deleteItem (item) {
-        const index = this.materiaisOrcamento.indexOf(item)
-        confirm('Are you sure you want to delete this item?') && this.materiaisOrcamento.splice(index, 1)
+        const index = this.novoOrcamento.listaMateriais.indexOf(item)
+        confirm('Are you sure you want to delete this item?') && this.novoOrcamento.listaMateriais.splice(index, 1)
       },
 
       close () {
@@ -178,21 +176,17 @@ export default {
 
       save () {
         if (this.editedIndex > -1) {
-          Object.assign(this.materiaisOrcamento[this.editedIndex], this.editedItem)
+          Object.assign(this.novoOrcamento.listaMateriais[this.editedIndex], this.editedItem)
         } else {
-          
-          this.materiaisOrcamento.push(this.novoMaterial)
+            this.novoOrcamento.listaMateriais.push(this.novoMaterial)
         }
         this.close()
       },
 
       salvarOrcamento(){
-          this.Orcamentos.push(this.novoOrcamento, this.materiaisOrcamento)
-
+          this.Orcamentos.push(this.novoOrcamento)
       }
-        
-               
-      },
+    },
 
       
     }
