@@ -145,15 +145,6 @@ export default {
         
         },
 
-        somandoValorMaterial(valor){
-            console.log(valor)
-            console.log(this.novoOrcamento.listaMateriais.quantidade)
-            let total = parseFloat(valor * this.novoOrcamento.listaMateriais.quantidade)
-            console.log(total)
-            return total
-
-        },
-
         editItem (item) {
         this.editedIndex = this.novoOrcamento.listaMateriais.indexOf(item)
         this.novoMaterial = Object.assign({}, item)

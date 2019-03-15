@@ -1,5 +1,25 @@
 <template>
     <div>
+
+      <!-- Snakebar -->
+      <v-snackbar
+        v-model="snackbar"
+        :color="color"
+        top
+        right
+        :timeout="timeout"
+      >
+      {{ text }}
+      <v-btn
+        dark
+        flat
+        @click="snackbar = false"
+      >
+        Fechar
+      </v-btn>
+    </v-snackbar>
+
+
       <v-toolbar flat>
         <v-toolbar-title>Clientes</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -8,6 +28,7 @@
           </v-btn>
       </v-toolbar>
       <v-dialog v-model="dialog" max-width="500px" max-height="800px">
+          <v-form v-model="validad" ref="form">
           <v-card>
             <v-card-title>
               <span class="headline">{{ formTitle }}</span>
@@ -17,17 +38,30 @@
               <v-container grid-list-md>
                 <v-layout>
                   <v-flex xs12 sm12 md12>
-                    <v-text-field v-model="novoCliente.nome" label="Nome"></v-text-field>
+                    <v-text-field 
+                    v-model="novoCliente.nome"
+                    label="Nome"
+                    :rules="campoNome"
+                    ></v-text-field>
                   </v-flex>
                 </v-layout>
                 <v-layout>
                   <v-flex xs12 sm12 md12>
-                    <v-text-field v-model="novoCliente.email" label="E-mail"></v-text-field>
+                    <v-text-field 
+                    v-model="novoCliente.email" 
+                    label="E-mail"
+                    :rules=" campoEmail"
+                    ></v-text-field>
                   </v-flex>
                 </v-layout>
                 <v-layout>
                   <v-flex xs12 sm12 md12>
-                    <v-text-field v-model="novoCliente.telefone" label="telefone"></v-text-field>
+                    <v-text-field 
+                    v-model="novoCliente.telefone" 
+                    label="telefone"
+                    type="number"
+                    :rules="campoTel"
+                    ></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -36,9 +70,10 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" flat @click="close">Cancelar</v-btn>
-              <v-btn color="blue darken-1" flat @click="save">Salvar</v-btn>
+              <v-btn color="blue darken-1" flat @click="save" :disabled=!validad >Salvar</v-btn>
             </v-card-actions>
           </v-card>
+          </v-form>
         </v-dialog>
 
       <v-data-table
@@ -77,9 +112,27 @@ export default {
         email: '',
         telefone: '',
       },
-
       editedIndex: -1,
+
+      //Rules
+      validad: false,
+      campoNome: [
+        v => !!v || 'Esse campo é obrigatorio.'
+      ],
+
+      campoEmail: [
+        v => !! v || 'Esse campo é obrigatorio.',
+        v => /.+@.+/.test(v) || 'Insira um e-mail valido.'
+      ],
+      campoTel: [ v => !!v || 'Esse campos é obrigatorio', v => (v && v.length ==9) || 'Insirá um numero valido'],
+
+       snackbar: false,
+        color: 'green',
+        mode: '',
+        timeout: 4000,
+        text: 'Cadastrado com sucesso'
       
+
     }),
 
     computed: {
@@ -120,6 +173,7 @@ export default {
       close () {
         this.dialog = false
         this.novoCliente = {}
+        this.$refs.form.resetValidation()
         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
@@ -130,8 +184,9 @@ export default {
         if (this.editedIndex > -1) {
           Object.assign(this.clientes[this.editedIndex], this.editedItem)
         } else {
-          
+          this.$refs.form.validate()
           this.$store.commit('addCliente',this.novoCliente)
+          this.snackbar = true
         }
         this.close()
       }

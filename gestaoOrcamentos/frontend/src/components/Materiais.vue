@@ -8,6 +8,7 @@
           </v-btn>
       </v-toolbar>
       <v-dialog v-model="dialog" max-width="500px" max-height="800px">
+        <v-form v-model="validad" ref="form">
           <v-card>
             <v-card-title>
               <span class="headline">{{ formTitle }}</span>
@@ -17,12 +18,20 @@
               <v-container grid-list-md>
                 <v-layout>
                   <v-flex xs12 sm12 md12>
-                    <v-text-field v-model="novoMaterial.nome" label="Nome"></v-text-field>
+                    <v-text-field 
+                    v-model="novoMaterial.nome" 
+                    label="Nome"
+                    :rules="campoObrigatorio"
+                    ></v-text-field>
                   </v-flex>
                 </v-layout>
                 <v-layout>
                   <v-flex xs12 sm12 md12>
-                    <v-text-field v-model="novoMaterial.preco" label="Preço"></v-text-field>
+                    <v-text-field 
+                    v-model="novoMaterial.preco" 
+                    label="Preço"
+                    :rules="campoObrigatorio"
+                    ></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -31,9 +40,10 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" flat @click="close">Cancelar</v-btn>
-              <v-btn color="blue darken-1" flat @click="save">Salvar</v-btn>
+              <v-btn color="blue darken-1" flat @click="save" :disabled = !validad>Salvar</v-btn>
             </v-card-actions>
           </v-card>
+        </v-form>
         </v-dialog>
 
       <v-data-table
@@ -45,7 +55,7 @@
         <template slot="items" slot-scope="props">
           <td class="text-xs-left">{{ props.item.nome}}</td>
           <td class="text-xs-left">{{ props.item.preco}}</td>
-          <td>
+          <td class="text-xs-right">
             <v-icon  class="mr-2" @click="editItem(props.item)"> edit </v-icon>
             <v-icon  class="ml-2" @click="deleteItem(props.item)"> delete </v-icon>
           </td>
@@ -60,16 +70,21 @@ export default {
       dialog: false,
       headers: [
         { text: 'Nome',       value: 'nome',       sortable: false },
-        { text: 'Preço',      value: 'Preço',      sortable: false },
-        { text: 'Ações',      value: 'açoes',      sortable: false },
+        { text: 'Valor Uni',  value: 'Preço',      sortable: false },
+        { text: 'Ações',      value: 'açoes',      sortable: false, align: 'right' },
       ],
       novoMaterial: {
         nome: '',
         preco: null,
       },
-
       editedIndex: -1,
       
+      //rules
+      validad: false,
+      campoObrigatorio: [
+        v => !!v || "Campo Obrigatorio."
+      ]
+
     }),
 
     computed: {
@@ -110,6 +125,7 @@ export default {
       close () {
         this.dialog = false
         this.novoMaterial = {}
+        this.$refs.form.resetValidation()
         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
