@@ -45,7 +45,7 @@
                             </v-layout>
                             <v-layout>
                                 <v-text-field
-                                label="Qtd."
+                                label="Quantidade."
                                 type="number"
                                 v-model="novoMaterial.quantidade"
                                 ></v-text-field>

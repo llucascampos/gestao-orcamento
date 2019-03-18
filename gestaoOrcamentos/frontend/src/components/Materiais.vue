@@ -31,7 +31,9 @@
                     v-model="novoMaterial.preco" 
                     label="Preço"
                     :rules="campoObrigatorio"
+                    v-money="money"
                     ></v-text-field>
+               
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -45,7 +47,7 @@
           </v-card>
         </v-form>
         </v-dialog>
-
+{{materiais}}
       <v-data-table
         :headers="headers"
         :items="materiais"
@@ -65,7 +67,9 @@
 </template>
 
 <script>
+import {VMoney} from 'v-money'
 export default {
+  directives: {money: VMoney}, 
     data: () => ({
       dialog: false,
       headers: [
@@ -83,7 +87,15 @@ export default {
       validad: false,
       campoObrigatorio: [
         v => !!v || "Campo Obrigatorio."
-      ]
+      ],
+
+      money: {
+          decimal: ',',
+          thousands: '.',
+          prefix: 'R$ ',
+          precision: 2,
+          masked: true
+        }
 
     }),
 
@@ -112,7 +124,7 @@ export default {
       },
 
       editItem (item) {
-        this.editedIndex = this.produtos.indexOf(item)
+        this.editedIndex = this.materiais.indexOf(item)
         this.novoMaterial = Object.assign({}, item)
         this.dialog = true
       },
